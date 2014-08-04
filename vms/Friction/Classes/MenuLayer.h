@@ -1,0 +1,50 @@
+#ifndef __MENU_LAYER_H__
+#define __MENU_LAYER_H__
+
+#include "cocos2d.h"
+// TODO: fix the includes, this only works because of a hacky symlink
+//#include "../../extensions/cocos-ext.h"
+//#include "cocos-ext.h"
+#include "extensions/cocos-ext.h"
+
+class SpriteLayer;
+class BackGroundLayer;
+
+class MenuLayer : public cocos2d::Layer
+{
+private :    
+    SpriteLayer * _spriteLayer;
+    cocos2d::MenuItemToggle * _item1;
+    cocos2d::MenuItemToggle * _item2;
+    cocos2d::MenuItemToggle * _item3;
+    cocos2d::MenuItemToggle * _item4;
+    cocos2d::MenuItemToggle * _item5;
+public :  
+    MenuLayer() 
+        : _spriteLayer(nullptr), 
+        _item1(nullptr),
+        _item2(nullptr),
+        _item3(nullptr),
+        _item4(nullptr),
+        _item5(nullptr)
+    {}
+    virtual bool init();  
+    void menuCloseCallback(cocos2d::Ref* pSender);
+    void menuLeftCallback(cocos2d::Ref* pSender);
+    void menuRightCallback(cocos2d::Ref* pSender);
+
+    void menuCallbackShowSumOfForces(cocos2d::Ref* pSender);
+    void menuCallbackShowValues(cocos2d::Ref* pSender);
+    void menuCallbackShowForces(cocos2d::Ref* pSender);
+    void menuCallbackShowMasses(cocos2d::Ref* pSender);
+    void menuCallbackShowSpeed(cocos2d::Ref* pSender);
+
+    void forceValueChanged(cocos2d::Ref* pSender, cocos2d::extension::Control::EventType controlEvent);
+    void frictionValueChanged(cocos2d::Ref* pSender, cocos2d::extension::Control::EventType controlEvent);
+    CREATE_FUNC(MenuLayer);
+
+    void setSpriteLayer(SpriteLayer * layer);
+    ~MenuLayer();
+};
+
+#endif // __MENU_LAYER_H__
