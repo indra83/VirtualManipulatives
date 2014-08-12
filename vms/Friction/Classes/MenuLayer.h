@@ -2,8 +2,8 @@
 #define __MENU_LAYER_H__
 
 #include "cocos2d.h"
-// TODO: fix the includes, this only works because of a hacky symlink
 //#include "../../extensions/cocos-ext.h"
+// TODO: fix the includes, this only works because of a hacky symlink
 //#include "cocos-ext.h"
 #include "extensions/cocos-ext.h"
 
@@ -14,22 +14,15 @@ class MenuLayer : public cocos2d::Layer
 {
 private :    
     SpriteLayer * _spriteLayer;
-    cocos2d::MenuItemToggle * _item1;
-    cocos2d::MenuItemToggle * _item2;
-    cocos2d::MenuItemToggle * _item3;
-    cocos2d::MenuItemToggle * _item4;
-    cocos2d::MenuItemToggle * _item5;
+
+    cocos2d::MenuItemToggle *_sof;
 public :  
     MenuLayer() 
         : _spriteLayer(nullptr), 
-        _item1(nullptr),
-        _item2(nullptr),
-        _item3(nullptr),
-        _item4(nullptr),
-        _item5(nullptr)
+          _sof(nullptr)
     {}
     virtual bool init();  
-    void menuCloseCallback(cocos2d::Ref* pSender);
+
     void menuLeftCallback(cocos2d::Ref* pSender);
     void menuRightCallback(cocos2d::Ref* pSender);
 

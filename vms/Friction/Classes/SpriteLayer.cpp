@@ -151,10 +151,10 @@ bool SpriteLayer::init()
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Point origin = Director::getInstance()->getVisibleOrigin();
 
-    _crate = SpriteAlt::create("crate.png", Point(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y + 10));
+    _crate = SpriteAlt::create("crate.png", Point(visibleSize.width/2 + origin.x, visibleSize.height/3 + origin.y + 10));
 
     auto body = PhysicsBody::create(); 
-    _shape = PhysicsShapeBox::create(_crate->getContentSize(), PhysicsMaterial(1.0, 1.0, 0.5));
+    _shape = PhysicsShapeBox::create(_crate->getContentSize(), PhysicsMaterial(1.0, 0.0, 0.5));
     body->addShape(_shape);
     body->setMass(100);
     _crate->setPhysicsBody(body);
@@ -164,7 +164,7 @@ bool SpriteLayer::init()
     float y = visibleSize.height + origin.y;
     node->setPhysicsBody(PhysicsBody::createEdgeBox(
                 Size(1000*visibleSize.width, visibleSize.height)));
-    node->setPosition(Point(visibleSize.width/2 + origin.x, visibleSize.height + origin.y));
+    node->setPosition(Point(visibleSize.width/2 + origin.x, visibleSize.height/3 + origin.y));
     addChild(node);
     _crate->addAltNode(node);
 
@@ -189,9 +189,9 @@ void SpriteLayer::addPersonOfForce(float force)
     Point origin = Director::getInstance()->getVisibleOrigin();
 
     auto beforeCrate = Point(visibleSize.width/2 + origin.x - _crate->getContentSize().width/2, 
-                    visibleSize.height/2 + origin.y);
+                    visibleSize.height/3 + 15 +origin.y);
     auto afterCrate = Point(visibleSize.width/2 + origin.x + _crate->getContentSize().width/2,
-                    visibleSize.height/2 + origin.y);
+                    visibleSize.height/3 + 15 +origin.y);
 
     auto prevPosition = beforeCrate;
     if (_person) 
@@ -365,7 +365,7 @@ void SpriteLayer::showSpeeds(bool enable)
 {
     if (_speedLabel)
     {
-        if (enable)
+        if (true)
             addChild(_speedLabel);
         else
             removeChild(_speedLabel);

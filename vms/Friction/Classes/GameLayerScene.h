@@ -1,9 +1,9 @@
-#ifndef __FRICTION_H__
-#define __FRICTION_H__
+#ifndef __GAMELAYER_SCENE_H__
+#define __GAMELAYER_SCENE_H__
 
 #include "cocos2d.h"
 
-class Friction : public cocos2d::Layer
+class GameLayer : public cocos2d::Layer
 {
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
@@ -13,7 +13,10 @@ public:
     virtual bool init();  
     
     // implement the "static create()" method manually
-    CREATE_FUNC(Friction);
+    CREATE_FUNC(GameLayer);
+
+    // back button exit
+    void onKeyReleased(cocos2d::EventKeyboard::KeyCode keycode , cocos2d::Event *event);
 };
 
-#endif // __FRICTION_H__
+#endif // __GAMELAYER_SCENE_H__

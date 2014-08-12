@@ -1,4 +1,4 @@
-#include "Friction.h"
+#include "GameLayerScene.h"
 #include "BackGroundLayer.h"
 #include "MenuLayer.h"
 #include "SpriteLayer.h"
@@ -9,15 +9,15 @@
 
 USING_NS_CC;
 
-Scene* Friction::createScene()
+Scene* GameLayer::createScene()
 {
     // 'scene' is an autorelease object
     auto scene = Scene::createWithPhysics();
     //scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-    scene->getPhysicsWorld()->setGravity(Vect(0.0, -100.0));
+    scene->getPhysicsWorld()->setGravity(Vect(0.0f, -100.0f));
     
     // 'layer' is an autorelease object
-    auto layer = Friction::create();
+    auto layer = GameLayer::create();
     // add layer as a child to scene
     // attaches all the children to the existing physics world as well
     scene->addChild(layer);
@@ -27,7 +27,7 @@ Scene* Friction::createScene()
 }
 
 // on "init" you need to initialize your instance
-bool Friction::init()
+bool GameLayer::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -39,23 +39,36 @@ bool Friction::init()
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Point origin = Director::getInstance()->getVisibleOrigin();
 
+
+///////////////////////////////////////////////////////////////////////////
+// created GameLayerScene (scene), add others as (layers) to this scene
+//////////////////////////////////////////////////////////////////////////
+
     /////////////////////////////
     // 2. add the background layer
     auto bgLayer = BackGroundLayer::create();
-    addChild(bgLayer, BG_ZINDEX); 
+    this->addChild(bgLayer, BG_ZINDEX);
 
     /////////////////////////////
     // 3. add the sprite layer
-    // add "HelloWorld" splash screen"
     auto spriteLayer = SpriteLayer::create();
     spriteLayer->setBackGroundLayer(bgLayer);
-    addChild(spriteLayer, SP_ZINDEX);
+    this->addChild(spriteLayer, SP_ZINDEX);
 
     /////////////////////////////
     // 4. add the menu layer
     auto menuLayer = MenuLayer::create();
     menuLayer->setSpriteLayer(spriteLayer);
-    addChild(menuLayer, MN_ZINDEX);
+    this->addChild(menuLayer, MN_ZINDEX);
+
+    // trigger to back button exit
+    setKeypadEnabled(true);
+
     return true;
 }
 
+
+void GameLayer::onKeyReleased(cocos2d::EventKeyboard::KeyCode keycode , cocos2d::Event *event)
+{
+	Director::getInstance()->end();
+}

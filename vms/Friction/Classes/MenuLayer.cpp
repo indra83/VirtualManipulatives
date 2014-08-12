@@ -23,7 +23,7 @@ public :
         return pRet;
     }
 
-    void onTouchEnded(Touch *pTouch, Event *pEvent)
+    void onTouchEnded(cocos2d::Touch *pTouch, cocos2d::Event *pEvent)
     {
         ControlSlider::onTouchEnded(pTouch, pEvent);
         setValue(_base);
@@ -42,17 +42,8 @@ bool MenuLayer::init()
     }
 
     Size visibleSize = Director::getInstance()->getVisibleSize();
-    Point origin = Director::getInstance()->getVisibleOrigin();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    //////////////////////////////
-    // close button
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(MenuLayer::menuCloseCallback, this));
-
-    closeItem->setPosition(Point(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
-          origin.y + closeItem->getContentSize().height/2));
 
     //////////////////////////////
     // display controls
@@ -60,65 +51,66 @@ bool MenuLayer::init()
     float displayLocX = 3*visibleSize.width/4;
     float delta = 50;
 
-#define CREATE_BUTTON(n, label, cb, enabled)\
-    _item##n = MenuItemToggle::createWithCallback(CC_CALLBACK_1(cb, this),\
-                                                      MenuItemFont::create( label" Disabled" ),\
-                                                      MenuItemFont::create( label" Enabled" ), NULL );\
-    _item##n->setPosition(Point(displayLocX, displayLocY));\
-    _item##n->setSelectedIndex(enabled);\
-    displayLocY -= delta;
+    // menu item for sum of forces only
+    MenuItemFont::setFontName("fonts/Marker Felt.ttf");
+    MenuItemFont::setFontSize(30);
+    auto title = MenuItemFont::create("Sum of Forces");
+    title->setPosition(7*visibleSize.width/8 , visibleSize.height/5);
+    title->setEnabled(true);
 
-    CREATE_BUTTON(1, "Show Forces", MenuLayer::menuCallbackShowForces, true)
-    CREATE_BUTTON(2, "  Sum Of Forces", MenuLayer::menuCallbackShowSumOfForces, false)
-    CREATE_BUTTON(3, "  Values", MenuLayer::menuCallbackShowValues, false)
-    CREATE_BUTTON(4, "Masses", MenuLayer::menuCallbackShowMasses, false)
-    CREATE_BUTTON(5, "Speed", MenuLayer::menuCallbackShowSpeed, false)
+    MenuItemFont::setFontName("fonts/Marker Felt.ttf");
+    MenuItemFont::setFontSize(30);
+    auto sum_of_forces = MenuItemToggle::createWithCallback(CC_CALLBACK_1(MenuLayer::menuCallbackShowSumOfForces,this),\
+    		MenuItemFont::create("off"),\
+    		MenuItemFont::create("on"),NULL);
+    //sum_of_forces->setPosition(7*visibleSize.width/8 , visibleSize.height/5 - 25);
+    auto menu = Menu::create(title , sum_of_forces, NULL);
+    this->addChild(menu);
 
-    auto menu = Menu::create(closeItem, _item1, _item2, _item3, _item4, _item5, NULL);
-    menu->setPosition(Point::ZERO);
-    addChild(menu);
  
     //////////////////////////////
     // controls on force
     //
-    auto labelForce = LabelTTF::create("Change Force :", "fonts/Marker Felt.ttf", 40);
-    labelForce->setPosition(Point(visibleSize.width/2, visibleSize.height/4 + 60));
+    auto labelForce = LabelTTF::create("Change Force :", "fonts/Marker Felt.ttf", 35);
+    labelForce->setPosition(Point(visibleSize.width/2, visibleSize.height/4 + 20));
     addChild(labelForce);
 
-    auto slider = ControlSliderRollBack::create("sliderTrack.png", "sliderProgress.png" ,"sliderThumb.png", 0.0f);                        
+    auto slider = ControlSliderRollBack::create("sliderTrack.png", "sliderProgress.png" ,"slider_handle.png", 0.0f);
     slider->setAnchorPoint(Point(0.5f, 0.5f));
     slider->setMinimumValue(-150.0f); // Sets the min value of range
     slider->setMaximumValue(150.0f); // Sets the max value of range
-    slider->setPosition(Point(visibleSize.width/2, visibleSize.height/4));
+    slider->setPosition(Point(visibleSize.width/2, visibleSize.height/4 - 20));
     slider->setValue(0.0f);
+
     // When the value of the slider will change, the given selector will be called
     slider->addTargetWithActionForControlEvents(this, cccontrol_selector(MenuLayer::forceValueChanged), Control::EventType::VALUE_CHANGED);                        
     addChild(slider);
-    auto labelL = LabelTTF::create("-150", "fonts/Marker Felt.ttf", 24);
-    labelL->setPosition(Point(slider->getPosition().x - slider->getContentSize().width/2, slider->getPosition().y - 20));
+    auto labelL = LabelTTF::create("-150", "fonts/Marker Felt.ttf", 25);
+    labelL->setPosition(Point(slider->getPosition().x - slider->getContentSize().width/2, slider->getPosition().y - 30));
     addChild(labelL);
-    auto labelM = LabelTTF::create("0", "fonts/Marker Felt.ttf", 24);
-    labelM->setPosition(Point(slider->getPosition().x, slider->getPosition().y - 20 ));
+    auto labelM = LabelTTF::create("0", "fonts/Marker Felt.ttf", 25);
+    labelM->setPosition(Point(slider->getPosition().x, slider->getPosition().y - 30 ));
     addChild(labelM);
-    auto labelH = LabelTTF::create("150", "fonts/Marker Felt.ttf", 24);
-    labelH->setPosition(Point(slider->getPosition().x + slider->getContentSize().width/2, slider->getPosition().y - 20));
+    auto labelH = LabelTTF::create("150", "fonts/Marker Felt.ttf", 25);
+    labelH->setPosition(Point(slider->getPosition().x + slider->getContentSize().width/2, slider->getPosition().y - 30));
     addChild(labelH);
 
     // TODO: add a stepper for force
  
     //////////////////////////////
     // controls on friction
-    auto labelF = LabelTTF::create("Change Friction :", "fonts/Marker Felt.ttf", 24);
-    labelF->setPosition(Point(displayLocX, displayLocY));
-    displayLocY -= 20;
+    auto labelF = LabelTTF::create("Change Friction :", "fonts/Marker Felt.ttf", 30);
+    labelF->setPosition(Point(visibleSize.width/2, visibleSize.height/8));
     addChild(labelF);
-    auto fSlider = ControlSlider::create("sliderTrack.png", "sliderProgress.png" ,"sliderThumb.png");                        
+
+    auto fSlider = ControlSlider::create("sliderTrack.png", "sliderProgress.png" ,"slider_handle.png");
     fSlider->setAnchorPoint(Point(0.5f, 0.5f));
     fSlider->setMinimumValue(0.0f); // Sets the min value of range
     fSlider->setMaximumValue(1.0f); // Sets the max value of range
-    fSlider->setPosition(Point(displayLocX, displayLocY));
+    fSlider->setPosition(Point(visibleSize.width/2 , visibleSize.height/8 - 30));
     fSlider->setValue(0.5f);
     fSlider->setScale(0.75f);
+
     // When the value of the slider will change, the given selector will be called
     fSlider->addTargetWithActionForControlEvents(this, cccontrol_selector(MenuLayer::frictionValueChanged), Control::EventType::VALUE_CHANGED);                        
     addChild(fSlider);
@@ -132,7 +124,7 @@ bool MenuLayer::init()
  
     //////////////////////////////
     // add label
-    auto label = LabelTTF::create("Friction", "fonts/Marker Felt.ttf", 24);
+    auto label = LabelTTF::create("Friction", "fonts/Marker Felt.ttf", 30);
     label->setPosition(Point(origin.x + visibleSize.width/2,
                             origin.y + visibleSize.height - label->getContentSize().height));
     addChild(label);
@@ -140,17 +132,13 @@ bool MenuLayer::init()
     return true;
 }
     
-void MenuLayer::menuCloseCallback(Ref* pSender)
-{
-    Director::getInstance()->end();
-}
 
 void MenuLayer::menuCallbackShowSumOfForces(Ref* pSender)
 {
-    MenuItemToggle* pLabel = (MenuItemToggle *)pSender; 
+    MenuItemToggle* pLabel = (MenuItemToggle *)pSender;
     _spriteLayer->showSumOfForces(pLabel->getSelectedIndex());
 }
-
+/*
 void MenuLayer::menuCallbackShowValues(Ref* pSender)
 {
     MenuItemToggle * pLabel = (MenuItemToggle *)pSender; 
@@ -181,7 +169,7 @@ void MenuLayer::menuCallbackShowSpeed(Ref* pSender)
     MenuItemToggle * pLabel = (MenuItemToggle *)pSender; 
     _spriteLayer->showSpeeds(pLabel->getSelectedIndex());
 }
-
+*/
 void MenuLayer::forceValueChanged(Ref* sender, Control::EventType controlEvent)
 {
     ControlSlider* pSlider = (ControlSlider*)sender;

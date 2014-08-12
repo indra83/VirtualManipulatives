@@ -61,7 +61,7 @@ public:
 
     void updatePosition()
     {
-        int safeOffset = -10;
+        int safeOffset = 0;
         // Get visible size
         Size visibleSize = Director::getInstance()->getVisibleSize();
         // 1. For each child of an parallax node
@@ -121,11 +121,13 @@ bool BackGroundLayer::init()
     // add blue back layer
     parallaxNode->addChild(
             [&] () -> Node * { 
-                return LayerColor::create(Color4B::BLUE, visibleSize.width, visibleSize.height/2); 
+                return LayerColor::create(Color4B(173, 255, 250, 255),
+                		visibleSize.width,
+                		visibleSize.height);
             },
             zIndex,
-            Point(1.0, 1.0),  
-            Point(0, visibleSize.height/2)
+            Point(1.0, 1.0),
+            Point(0 , 0)
     );   
 
 
@@ -139,8 +141,8 @@ bool BackGroundLayer::init()
                 return clouds; 
             },
             ++zIndex,
-            Point(0.025, 1.0),  
-            Point(0, visibleSize.height) 
+            Point(0.025, 1.0),
+            Point(0, 9*visibleSize.height/10)
     );   
 
     //////////////////////////////
@@ -149,11 +151,12 @@ bool BackGroundLayer::init()
             [] () -> Node * {
                 auto mountains = Sprite::create("mountains.png");
                 mountains->setAnchorPoint(Point(0.0, 0.0));
+                mountains->setScale(1.3);
                 return mountains;
             },
             ++zIndex,
-            Point(0.05, 1.0),  
-            Point(0, visibleSize.height/2)
+            Point(0.05, 1.0),
+            Point(0, visibleSize.height/3)
     );   
 
     //////////////////////////////
@@ -162,12 +165,12 @@ bool BackGroundLayer::init()
             [] () -> Node * {
                 auto tree = Sprite::create("tree.png");
                 tree->setAnchorPoint(Point(0.0, 0.0));
-                tree->setScale(2.0);
+                tree->setScale(1.7);
                 return tree;
             },
             ++zIndex,
-            Point(0.75, 1.0),  
-            Point(0, visibleSize.height/2)
+            Point(0.75, 1.0),
+            Point(0, visibleSize.height/3)
     );   
 
     //////////////////////////////
@@ -175,22 +178,22 @@ bool BackGroundLayer::init()
     parallaxNode->addChild(
             [] () -> Node * {
                 auto grass = Sprite::create("grass.png");
-                grass->setAnchorPoint(Point(0.0, 0.0));
+                grass->setAnchorPoint(Point(0.0, 1.0));
                 return grass;
             },
             ++zIndex,
-            Point(1.0, 1.0),  
-            Point(0, visibleSize.height/2)
+            Point(1.0, 1.0),
+            Point(0, visibleSize.height/3)
     );   
 
     //////////////////////////////
     //add gray ground layer
     parallaxNode->addChild(
             [&]() -> Node * { 
-                return LayerColor::create(Color4B::GRAY, visibleSize.width, visibleSize.height/2);
+                return LayerColor::create(Color4B(70, 70, 70, 255), visibleSize.width, visibleSize.height/3);
             },
             zIndex,
-            Point(1.0, 1.0),  
+            Point(1.0, 1.0),
             Point(0, 0)
     );   
 
@@ -200,12 +203,12 @@ bool BackGroundLayer::init()
             [] () -> Node * {
                 auto bricks = Sprite::create("brick-tile.png");
                 bricks->setAnchorPoint(Point(0.0, 1.0));
-                bricks->setScale(0.5);
+                bricks->setScale(0.3);
                 return bricks;
             },
             ++zIndex,
-            Point(1.0, 1.0),  
-            Point(0, visibleSize.height/2)
+            Point(1.0, 1.0),
+            Point(0, visibleSize.height/3 + 15)
     );   
 
 
