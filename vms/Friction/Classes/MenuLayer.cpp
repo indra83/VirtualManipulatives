@@ -49,22 +49,25 @@ bool MenuLayer::init()
     // display controls
     float displayLocY = 3*visibleSize.height/8 + 40;
     float displayLocX = 3*visibleSize.width/4;
-    float delta = 50;
+    //float delta = 50;
 
     // menu item for sum of forces only
-    MenuItemFont::setFontName("fonts/Marker Felt.ttf");
-    MenuItemFont::setFontSize(30);
-    auto title = MenuItemFont::create("Sum of Forces");
-    title->setPosition(7*visibleSize.width/8 , visibleSize.height/5);
-    title->setEnabled(true);
+    auto title = LabelTTF::create("Sum of Forces" , "fonts/Marker Felt.ttf", 35);
+    title->setPosition(Vec2(8*visibleSize.width/9 , visibleSize.height/4 - 20));
+    this->addChild(title);
+
+
+#define enable false
 
     MenuItemFont::setFontName("fonts/Marker Felt.ttf");
     MenuItemFont::setFontSize(30);
     auto sum_of_forces = MenuItemToggle::createWithCallback(CC_CALLBACK_1(MenuLayer::menuCallbackShowSumOfForces,this),\
     		MenuItemFont::create("off"),\
     		MenuItemFont::create("on"),NULL);
-    //sum_of_forces->setPosition(7*visibleSize.width/8 , visibleSize.height/5 - 25);
-    auto menu = Menu::create(title , sum_of_forces, NULL);
+    sum_of_forces->setSelectedIndex(enable);
+
+    auto menu = Menu::create(sum_of_forces, NULL);
+    menu->setPosition(5*visibleSize.width/6 , visibleSize.height/6 - 20);
     this->addChild(menu);
 
  

@@ -16,7 +16,6 @@ class SpriteLayer : public cocos2d::Layer
     cocos2d::PhysicsShape *_shape; 
     cocos2d::MenuItemLabel * _massLabel;
     cocos2d::MenuItemLabel * _speedLabel;
-    bool _showValues;
     float _forceExternalValue;
 public :  
     SpriteLayer() : 
@@ -29,7 +28,6 @@ public :
        _sumOfForces(nullptr),
        _speedLabel(nullptr),
        _massLabel(nullptr),
-       _showValues(false),
        _forceExternalValue(0.0) {}
 
     ~SpriteLayer();
@@ -38,11 +36,11 @@ public :
     void changeFrictionValue(float value);
     void setPhysicsWorld(cocos2d::PhysicsWorld * world) { _world = world; }
     void setBackGroundLayer(Layer *layer);
-    void showMasses(bool enable);
+    //void showMasses(bool enable);
     void showSumOfForces(bool enable);
-    void showForceValues(bool enable);
-    void showSpeeds(bool enable);
-    void showForces(bool enable);
+    //void showForceValues(bool enable);
+    //void showSpeeds(bool enable);
+    //void showForces(bool enable);
     void addPersonOfForce(float);
     void update(float);
     cocos2d::LabelTTF * getSpeedLabel();

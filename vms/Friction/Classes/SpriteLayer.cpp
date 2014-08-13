@@ -12,14 +12,14 @@ class ValueArrow : public Sprite
     MenuItemLabel * _label;
 
 public :
-    static ValueArrow * create(const std::string &filename, bool showValue = false) 
+    static ValueArrow * create(const std::string &filename)
     {
         ValueArrow *sprite = new ValueArrow();                                                                                                                                        
         if (sprite && sprite->initWithFile(filename))
         {
             sprite->autorelease();
             sprite->adjustSize();
-            sprite->showValues(showValue);
+            sprite->showValues();
             return sprite;
         }
         CC_SAFE_DELETE(sprite);
@@ -65,29 +65,25 @@ public :
         if (val < 0)
             val = -val;
         sstr << (int)val << " N"; 
-        auto labelTTF = LabelTTF::create(sstr.str().c_str(), "fonts/Marker Felt.ttf", 30);
+        auto labelTTF = LabelTTF::create(sstr.str().c_str(), "fonts/Maven Pro Black.otf", 30);
         labelTTF->setHorizontalAlignment(TextHAlignment::LEFT);
         return labelTTF;
     }
 
-    void showValues(bool enable)
+    void showValues()
     {
-        if (enable)
-        {    
-            Size visibleSize = Director::getInstance()->getVisibleSize();
-            Point origin = Director::getInstance()->getVisibleOrigin();
-             
-            _label = MenuItemLabel::create(getLabel());
-            _label->setColor(Color3B(0, 0, 0));
-            _label->setAnchorPoint(Point(0.5, 0.0));
-            _label->setPosition(Point(getContentSize().width * getScaleX()/2 , 65.0));  
-            // add the mass label 
-            addChild(_label);
-            _label->retain();
 
-        }
-        else if (_label)
-            removeChild(_label, false);
+		Size visibleSize = Director::getInstance()->getVisibleSize();
+		Point origin = Director::getInstance()->getVisibleOrigin();
+
+		_label = MenuItemLabel::create(getLabel());
+		_label->setColor(Color3B(255,255,255));
+		_label->setAnchorPoint(Point(0.5, 0.0));
+		_label->setPosition(Point(getContentSize().width /** getScaleX()/2 */, 65.0));
+		// add the mass label
+		addChild(_label);
+		_label->retain();
+
     }
 };
 
@@ -151,26 +147,69 @@ bool SpriteLayer::init()
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Point origin = Director::getInstance()->getVisibleOrigin();
 
-    _crate = SpriteAlt::create("crate.png", Point(visibleSize.width/2 + origin.x, visibleSize.height/3 + origin.y + 10));
+    _crate = SpriteAlt::create("crate.png", Point(visibleSize.width/2 + origin.x , visibleSize.height/2 + origin.y +15));
 
     auto body = PhysicsBody::create(); 
+    // PhysicsMaterial - Density , Restitution , Friction
     _shape = PhysicsShapeBox::create(_crate->getContentSize(), PhysicsMaterial(1.0, 0.0, 0.5));
     body->addShape(_shape);
     body->setMass(100);
     _crate->setPhysicsBody(body);
-    addChild(_crate, 1);
+    this->addChild(_crate, 1);
 
     auto node = Node::create();
-    float y = visibleSize.height + origin.y;
+    //float y = visibleSize.height + origin.y;
     node->setPhysicsBody(PhysicsBody::createEdgeBox(
                 Size(1000*visibleSize.width, visibleSize.height)));
-    node->setPosition(Point(visibleSize.width/2 + origin.x, visibleSize.height/3 + origin.y));
+
+    node->setPosition(Point(visibleSize.width/2 + origin.x , 5*visibleSize.height/6 + 12 +origin.y));
     addChild(node);
     _crate->addAltNode(node);
 
-    addPersonOfForce(0.0);
-    showForces(true);
-    scheduleUpdate();
+    ///////////////////////////////////////////////////////////////////////////////////////
+    // issue block to always set mass to true
+
+    _massLabel = MenuItemLabel::create(getMassLabel());
+	_massLabel->setColor(Color3B(0, 0, 0));
+	_massLabel->setAnchorPoint(Point(0.0, 0.0));
+
+	auto half = _crate->getContentSize()/2;
+	_massLabel->setPosition(_crate->getPosition() - Point(half.width, half.height));
+	_massLabel->retain();
+	addChild(_massLabel, 1);
+
+    // issue block to always set show friction values to true
+    _forceFriction = ValueArrow::create("arrow-fr.png"); // TODO: make it red
+	_forceFriction->setAnchorPoint(Point(0.0f, 0.0f));
+	_forceFriction->setScaleY(0.25);
+	_forceFriction->setPosition(Point(origin.x + visibleSize.width/2,
+										origin.y + visibleSize.height/2 + _forceFriction->getContentSize().height / 4));
+	_forceFriction->retain();
+	addChild(_forceFriction , 1);
+
+	// issue block to always set show force values to true
+	_forceExternal = ValueArrow::create("arrow-force.png"); // TODO: make it  blue
+	_forceExternal->setAnchorPoint(Point(0.0f, 0.0f));
+	_forceExternal->setScaleY(0.25);
+	_forceExternal->setPosition(Point(origin.x + visibleSize.width/2,
+										origin.y + visibleSize.height/2 + 3*_forceExternal->getContentSize().height / 4));
+	_forceExternal->retain();
+	addChild(_forceExternal, 2);
+
+	// issue block to always set speed value to true
+
+
+	_speedLabel = MenuItemLabel::create(getSpeedLabel());
+	_speedLabel->setColor(Color3B(0, 0, 0));
+	_speedLabel->setAnchorPoint(Point(1.0, 0.0));
+	_speedLabel->setPosition(Point(visibleSize.width, visibleSize.height - 40));
+	// add the mass label
+	addChild(_speedLabel);
+	_speedLabel->retain();
+
+
+    this->addPersonOfForce(0.0);
+    this->scheduleUpdate();
     return true;
 }
 
@@ -255,32 +294,6 @@ void SpriteLayer::changeFrictionValue(float value)
     _shape->setFriction(value);
 }
 
-void SpriteLayer::showMasses(bool enable)
-{
-    if (_massLabel)
-    {
-        if (enable)
-            addChild(_massLabel, 1);
-        else
-            removeChild(_massLabel);
-    }
-    else
-    {
-        if (enable)
-        {
-            _massLabel = MenuItemLabel::create(getMassLabel());
-            _massLabel->setColor(Color3B(0, 0, 0));
-            _massLabel->setAnchorPoint(Point(0.0, 0.0));
-                                                                                                                                                                 
-            auto half = _crate->getContentSize()/2;
-            _massLabel->setPosition(_crate->getPosition() - Point(half.width, half.height));
-            _massLabel->retain();
-            // add the mass label 
-            addChild(_massLabel, 1);
-        }
-    }
-}
-
 LabelTTF * SpriteLayer::getMassLabel()
 {
     float mass = _crate->getPhysicsBody()->getMass();
@@ -299,10 +312,10 @@ void SpriteLayer::showSumOfForces(bool enable)
     {
         if (_sumOfForces == nullptr)
         {
-            _sumOfForces = ValueArrow::create("arrow.png", _showValues); // TODO: make it red
+            _sumOfForces = ValueArrow::create("arrow.png"); // TODO: make it red
             _sumOfForces->setScaleY(0.25);
             _sumOfForces->setPosition(Point(origin.x + visibleSize.width/2, 
-                                                origin.y + visibleSize.height/2 + 5*_forceFriction->getContentSize().height / 4));
+                                                origin.y + visibleSize.height/2 /*+ 5*_forceFriction->getContentSize().height / 4*/));
             _sumOfForces->retain();
         }
         addChild(_sumOfForces, 2);
@@ -310,82 +323,6 @@ void SpriteLayer::showSumOfForces(bool enable)
     }
     else if (_sumOfForces)
         removeChild(_sumOfForces);
-}
-
-void SpriteLayer::showForceValues(bool enable)
-{
-    _showValues = enable;
-    if (_forceExternal) 
-        _forceExternal->showValues(enable);
-    if (_forceFriction) 
-        _forceFriction->showValues(enable);
-    if (_sumOfForces)
-        _sumOfForces->showValues(enable);
-}
-
-void SpriteLayer::showForces(bool enable)
-{
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-    Point origin = Director::getInstance()->getVisibleOrigin();
-
-    if (enable)
-    {
-        if (_forceFriction == nullptr)
-        {
-            _forceFriction = ValueArrow::create("arrow.png", _showValues); // TODO: make it red
-            _forceFriction->setAnchorPoint(Point(0.0f, 0.0f));
-            _forceFriction->setScaleY(0.25);
-            _forceFriction->setPosition(Point(origin.x + visibleSize.width/2, 
-                                                origin.y + visibleSize.height/2 + _forceFriction->getContentSize().height / 4));
-            _forceFriction->retain();
-        }
-        addChild(_forceFriction, 2);
-        if (_forceExternal == nullptr)
-        {
-            _forceExternal = ValueArrow::create("arrow.png", _showValues); // TODO: make it  blue
-            _forceExternal->setAnchorPoint(Point(0.0f, 0.0f));
-            _forceExternal->setScaleY(0.25);
-            _forceExternal->setPosition(Point(origin.x + visibleSize.width/2, 
-                                                origin.y + visibleSize.height/2 + 3*_forceExternal->getContentSize().height / 4));
-            _forceExternal->retain();
-        }
-        
-        addChild(_forceExternal, 2);
-    }
-    else
-    {
-        if (_forceFriction)
-            removeChild(_forceFriction);
-        if (_forceExternal) 
-            removeChild(_forceExternal);
-    }
-}
-
-void SpriteLayer::showSpeeds(bool enable)
-{
-    if (_speedLabel)
-    {
-        if (true)
-            addChild(_speedLabel);
-        else
-            removeChild(_speedLabel);
-    }
-    else
-    {
-        if (enable)
-        {
-            Size visibleSize = Director::getInstance()->getVisibleSize();
-            Point origin = Director::getInstance()->getVisibleOrigin();
-             
-            _speedLabel = MenuItemLabel::create(getSpeedLabel());
-            _speedLabel->setColor(Color3B(0, 0, 0));
-            _speedLabel->setAnchorPoint(Point(1.0, 0.0));
-            _speedLabel->setPosition(Point(visibleSize.width, visibleSize.height - 40));  
-            // add the mass label 
-            addChild(_speedLabel);
-            _speedLabel->retain();
-        }
-    }
 }
 
 // TODO : get it through the api

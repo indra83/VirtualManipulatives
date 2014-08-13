@@ -211,6 +211,9 @@ bool BackGroundLayer::init()
             Point(0, visibleSize.height/3 + 15)
     );   
 
+    //////////////////////////////
+    //add physics ground to the background layer
+
 
     addChild(parallaxNode, 0);
     return true;

@@ -2,9 +2,6 @@
 #define __MENU_LAYER_H__
 
 #include "cocos2d.h"
-//#include "../../extensions/cocos-ext.h"
-// TODO: fix the includes, this only works because of a hacky symlink
-//#include "cocos-ext.h"
 #include "extensions/cocos-ext.h"
 
 class SpriteLayer;
